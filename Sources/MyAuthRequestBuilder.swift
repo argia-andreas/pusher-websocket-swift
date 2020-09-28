@@ -3,13 +3,8 @@ import Foundation
 @objcMembers
 @objc(MyAuthRequestBuilder) public class MyAuthRequestBuilder: NSObject & AuthRequestBuilderProtocol {
     public var authEndpoint: String
-    // public var bearerToken: String
     public var authHeaders: NSDictionary? = nil
     public var authParams: NSDictionary? = nil
-    // public var headers: String
-    // public var params: String
-    // public var socketID: String
-    // public var channelName: String
 
     @objc required public init(authEndpoint: String, authHeaders: NSDictionary? = nil, authParams: NSDictionary? = nil) {
         self.authEndpoint = authEndpoint
@@ -22,23 +17,19 @@ import Foundation
         var endpointUrl = self.authEndpoint
         var stringKey = ""
         var stringValue = ""
-        // Add auth params
+
+        
         var i = 0
+        // Add auth params
         if(self.authParams != nil) {
             for (key, value) in self.authParams! {
                 stringKey = key as! String
                 stringValue = value as! String
 
                 if(i == 0) {
-                    endpointUrl += "?"
-                    endpointUrl += stringKey
-                    endpointUrl += "="
-                    endpointUrl += stringValue
+                    endpointUrl += "?" + stringKey + "=" + stringValue
                 } else {
-                    endpointUrl += "&"
-                    endpointUrl += stringKey
-                    endpointUrl +=  "="
-                    endpointUrl += stringValue
+                    endpointUrl += "&" + stringKey + "=" + stringValue 
                 }
                 i += 1
             }
@@ -57,8 +48,6 @@ import Foundation
             }
         }
         
-        // request.addValue(self.bearerToken, forHTTPHeaderField: "Authorization")
-        // request.addValue("application/json", forHTTPHeaderField: "Accept")
         return request
     }
 }

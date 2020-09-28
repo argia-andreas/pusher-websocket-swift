@@ -5,9 +5,28 @@ import Foundation
 
     // Take an existing implementation of AuthRequestBuilderProtocol
     // And Extract the info.
+    // TODO - 
+    // Extract the headers using allHTTPHeaderFields
+    // Extract the Params parsing the url attribute
+    // Nicer than relying on AuthRequestBuilderProtocol being as MyAuthRequestBuilder
+
     static func toObjc(authRequestBuilder: AuthRequestBuilderProtocol) -> OCMyAuthRequestBuilder {
         var source = authRequestBuilder as! NSObject as! MyAuthRequestBuilder
-        // return OCMyAuthRequestBuilder(authEndpoint: AuthRequestbuilder.authEndpoint!,headers: AuthRequestBuilder.headers!,params: AuthRequestBuilder.params!)
+        // var request: URLRequest = authRequestBuilder.requestFor();
+        // var headers = request.allHTTPHeaderFields
+        // var url = request.url
+        // var params = [String: String]()
+
+        // if let components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+        //     if let queryItems = components.queryItems {
+        //         for item in queryItems {
+        //             params[item.name] = item.value!
+        //         }
+        //     }
+        // } else {
+        //     params = [:]
+        // }
+
         return OCMyAuthRequestBuilder(authEndpoint: source.authEndpoint, authHeaders: source.authHeaders, authParams: source.authParams)
     }
 
