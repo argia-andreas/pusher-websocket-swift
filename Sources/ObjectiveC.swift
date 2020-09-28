@@ -1,5 +1,34 @@
 import Foundation
 
+
+@objc public extension MyAuthRequestBuilder {
+
+    // Take an existing implementation of AuthRequestBuilderProtocol
+    // And Extract the info.
+    static func toObjc(authRequestBuilder: AuthRequestBuilderProtocol) -> OCMyAuthRequestBuilder {
+        var source = authRequestBuilder as! NSObject as! MyAuthRequestBuilder
+        // return OCMyAuthRequestBuilder(authEndpoint: AuthRequestbuilder.authEndpoint!,headers: AuthRequestBuilder.headers!,params: AuthRequestBuilder.params!)
+        return OCMyAuthRequestBuilder(authEndpoint: source.authEndpoint, authHeaders: source.authHeaders, authParams: source.authParams)
+    }
+
+    static func fromObjc(source: OCMyAuthRequestBuilder) -> MyAuthRequestBuilder {
+        return self.init(authEndpoint:source.authEndpoint, authHeaders: source.authHeaders, authParams: source.authParams)
+    }
+}
+@objcMembers
+@objc public class OCMyAuthRequestBuilder: NSObject {
+    var authEndpoint: String
+    var authHeaders: NSDictionary? = nil
+    var authParams: NSDictionary? = nil
+
+    public required init(authEndpoint: String, authHeaders: NSDictionary? = nil, authParams: NSDictionary? = nil) {
+        self.authEndpoint = authEndpoint
+        self.authHeaders = authHeaders
+        self.authParams = authParams
+    }
+
+}
+
 @objc public extension Pusher {
     func subscribe(channelName: String) -> PusherChannel {
         return self.subscribe(channelName, onMemberAdded: nil, onMemberRemoved: nil)
@@ -152,7 +181,7 @@ public extension AuthMethod {
         case let .endpoint(authEndpoint):
             return OCAuthMethod(authEndpoint: authEndpoint)
         case let .authRequestBuilder(authRequestBuilder):
-            return OCAuthMethod(authRequestBuilder: authRequestBuilder)
+            return OCAuthMethod(authRequestBuilder: MyAuthRequestBuilder.toObjc(authRequestBuilder: authRequestBuilder))
         case let .inline(secret):
             return OCAuthMethod(secret: secret)
         case let .authorizer(authorizer):
@@ -165,7 +194,7 @@ public extension AuthMethod {
     static func fromObjc(source: OCAuthMethod) -> AuthMethod {
         switch (source.type) {
         case 0: return AuthMethod.endpoint(authEndpoint: source.authEndpoint!)
-        case 1: return AuthMethod.authRequestBuilder(authRequestBuilder: source.authRequestBuilder!)
+        case 1: return AuthMethod.authRequestBuilder(authRequestBuilder: MyAuthRequestBuilder.fromObjc(source: source.authRequestBuilder!))
         case 2: return AuthMethod.inline(secret: source.secret!)
         case 3: return AuthMethod.authorizer(authorizer: source.authorizer!)
         case 4: return AuthMethod.noMethod
@@ -179,7 +208,7 @@ public extension AuthMethod {
     var type: Int
     var secret: String? = nil
     var authEndpoint: String? = nil
-    var authRequestBuilder: AuthRequestBuilderProtocol? = nil
+    var authRequestBuilder: OCMyAuthRequestBuilder? = nil
     var authorizer: Authorizer? = nil
 
     public init(type: Int) {
@@ -191,7 +220,7 @@ public extension AuthMethod {
         self.authEndpoint = authEndpoint
     }
 
-    public init(authRequestBuilder: AuthRequestBuilderProtocol) {
+    public init(authRequestBuilder: OCMyAuthRequestBuilder) {
         self.type = 1
         self.authRequestBuilder = authRequestBuilder
     }
